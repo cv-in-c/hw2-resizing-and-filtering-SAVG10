@@ -236,34 +236,37 @@ image make_gy_filter()
 
 void feature_normalize(image im)
 {
-    int max = 0, min = 0;
-    for(int z = 0; z < im.c; z ++) {
-        for(int y = 0; y < im.h; y ++) {
-            for(int x = 0; x < im.w; x ++) {
-                float value = get_pixel(im, x, y, z);
-                if(value > max) max = value;
-                if(value < min) min = value;
-            }
-        }
-    }
-    //Range 
-    float range = max - min;
-
-    for(int z = 0; z < im.c; z ++) {
-        for(int y = 0; y < im.h; y ++) {
-            for(int x = 0; x < im.w; x ++) {
-                if(range == 0){ 
-                    set_pixel(im, x, y, z, 0);
+    float max=im.data[0];
+    float min=im.data[0];
+        for (int k = 0; k < im.c; k++) {
+        for (int j = 0; j < im.h; j++) {
+            for (int i = 1; i < im.w; i++) {
+                if(max < get_pixel(im,i,j,k)){
+                     max = get_pixel(im,i,j,k);
                 }
-
-                else {
-                    float a= get_pixel(im, x, y, z) - min;
-                    float b = a/range;
-                    set_pixel(im, x, y, z, b);
+                if(min > get_pixel(im,i,j,k)){
+                    min = get_pixel(im,i,j,k);
                 }
             }
         }
+        }
+        if(max != min){
+            for (int k = 0; k < im.c; k++) {
+        for (int j = 0; j < im.h; j++) {
+            for (int i = 0; i < im.w; i++) {
+              im.data[i + j*im.w + k*im.w*im.h]=((im.data[i + j*im.w + k*im.w*im.h] - min)/(max - min));
+        }
+        }
     }
+        }else{
+                        for (int k = 0; k < im.c; k++) {
+        for (int j = 0; j < im.h; j++) {
+            for (int i = 0; i < im.w; i++) {
+              im.data[i + j*im.w + k*im.w*im.h]=0;
+        }
+        }
+    }
+  }
 }
 
 image *sobel_image(image im)
