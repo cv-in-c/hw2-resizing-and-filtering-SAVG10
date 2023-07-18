@@ -28,7 +28,19 @@ image nn_resize(image im, int w, int h)
 
 float bilinear_interpolate(image im, float x, float y, int c)
 {
-    // TODO
+    float p1X = floorf(x);
+    float p1Y = floorf(y);
+
+    float p2X = ceilf(x);
+    float p2Y = floorf(y);
+
+    float p3X = floorf(x);
+    float p3Y = ceilf(y);
+    
+    float p4X = ceilf(x);
+    float p4Y = ceilf(y);
+
+    
     return 0;
 }
 
