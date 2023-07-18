@@ -67,7 +67,6 @@ image new2 = make_image(w, h, im.c);
 
     float width_ratio = (float)im.w / (float)w;
     float height_ratio = (float)im.h / (float)h;
-    float value = 0.0;
 
     float lx, ly;
 
@@ -80,9 +79,8 @@ image new2 = make_image(w, h, im.c);
             {
                 lx = (x + 0.5f) * width_ratio-0.5f;
                 ly = (y + 0.5f) * height_ratio-0.5f;
-                value = bilinear_interpolate(im, lx, ly, z);
 
-                set_pixel(new2, x, y, z, value);
+                set_pixel(new2, x, y, z, bilinear_interpolate(im, lx, ly, z));
             }
         }
     }
