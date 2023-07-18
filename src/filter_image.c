@@ -156,8 +156,23 @@ image make_emboss_filter()
 
 image make_gaussian_filter(float sigma)
 {
-    // TODO
-    return make_image(1,1,1);
+    int boxL = 6 * sigma;
+    if (boxL % 2 == 0) boxL += 1;
+
+    image filter = make_image(boxL, boxL, 1);
+    int center = (boxL - 1) / 2;
+    for(int i = 0; i < boxL; i ++) {
+        for(int j = 0; j < boxL; j ++) {
+            float x = j - center;
+            float y = i - center;
+            float a = TWOPI * powf(sigma, 2);
+            float b = powf(x, 2) + powf(y, 2);
+            float c = 2 * powf(sigma, 2);
+            float d = (1.0 /a) * expf((-1) * (b) / (c));
+            set_pixel(filter, j, i, 0, d);
+        }
+    }
+    return filter;
 }
 
 image add_image(image a, image b)
