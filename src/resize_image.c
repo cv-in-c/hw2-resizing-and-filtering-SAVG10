@@ -40,13 +40,53 @@ float bilinear_interpolate(image im, float x, float y, int c)
     float p4X = ceilf(x);
     float p4Y = ceilf(y);
 
+    // this gives us the four neighbouring points of the point (x,y) obtained by scaling the required image according to the original image
     
-    return 0;
+    float d1x = x-p1X;
+    float d1y = y-p1Y;
+
+    float d3x= x-p3X;
+    float d3y = p3Y-y;
+    
+    float p1 = get_pixel(im, floor(p1X), floor(p1Y),c);
+    float p2 = get_pixel(im, ceil(p2X), floor(p2Y),c);
+    float p3 = get_pixel(im, floor(p3X), ceil(p3Y),c);
+    float p4 = get_pixel(im, ceil(p4X), ceil(p4Y),c);
+
+    float l1 = p1*(1-d1x)+p2*(d1x);
+    float l2 = p3*(1-d1x)+p4*(d1x);
+    float l = l1*d3y + l2*d1y;
+
+    
+    return l;
 }
 
 image bilinear_resize(image im, int w, int h)
 {
-    // TODO
-    return make_image(1,1,1);
+image new2 = make_image(w, h, im.c);
+
+    float width_ratio = (float)im.w / (float)w;
+    float height_ratio = (float)im.h / (float)h;
+    float value = 0.0;
+
+    float lx, ly;
+
+    // resize the image
+    for (int y = 0; y < new2.h; y++)
+    {
+        for (int x = 0; x < new2.w; x++)
+        {
+            for (int z = 0; z < new2.c; z++)
+            {
+                lx = (x + 0.5f) * width_ratio-0.5f;
+                ly = (y + 0.5f) * height_ratio-0.5f;
+                value = bilinear_interpolate(im, lx, ly, z);
+
+                set_pixel(new2, x, y, z, value);
+            }
+        }
+    }
+
+    return new2;
 }
 
