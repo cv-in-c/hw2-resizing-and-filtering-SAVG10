@@ -268,12 +268,47 @@ void feature_normalize(image im)
 
 image *sobel_image(image im)
 {
-    // TODO
-    return calloc(2, sizeof(image));
+    image gxFilter = make_gx_filter();
+    image gyFilter = make_gy_filter();
+    image gx = convolve_image(im, gxFilter, 0);
+    image gy = convolve_image(im, gyFilter, 0);
+    image *r = calloc(2, sizeof(image));
+    image m = make_image(im.w, im.h, 1);
+    image d = make_image(im.w, im.h, 1);
+    r[0] = m;
+    r[1] = d;
+
+    
+    for(int x = 0; x < im.w; x++) {
+        for(int y = 0; y < im.h; y++) {
+            float gxPix = get_pixel(gx, x, y, 0);
+            float gyPix = get_pixel(gy, x, y, 0);
+            float mPix = sqrtf((gxPix * gxPix) + (gyPix * gyPix));
+            float dPix = atan2(gyPix, gxPix);
+            set_pixel(m, x, y, 0, mPix);
+            set_pixel(d, x, y, 0, dPix);
+        }
+    }
+
+    return r;
 }
 
 image colorize_sobel(image im)
 {
-    // TODO
-    return make_image(1,1,1);
+    image color = make_image(im.w, im.h, 3);
+    image* sobel = sobel_image(im);
+    image d = sobel[1];
+    feature_normalize(d);
+    for(int x = 0; x < im.w; x++) {
+        for(int y = 0; y < im.h; y++) {
+            float sobelPix = get_pixel(d, x, y, 0);
+            float pixR = sobelPix * (1.0f + x) / im.w;
+            float pixG = sobelPix * (1.0f + y) / im.h;
+            float pixB = (pixG + pixR / 2.0f);
+            set_pixel(color, x, y, 0, pixR);
+            set_pixel(color, x, y, 1, pixG);
+            set_pixel(color, x, y, 2, pixB);
+        }
+    }
+    return color;
 }
